@@ -1,6 +1,7 @@
 
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
+import { ParsedQs } from 'qs';
 
 dotenv.config();
 
@@ -8,8 +9,12 @@ const TELETEXT_API_URL = process.env.TELETEXT_API_URL;
 const ID = process.env.APP_ID;
 const APP_KEY = process.env.APP_KEY;
 
-export function getTeletextPageImage(page:number, subpage:number) {
-    return fetchImage(TELETEXT_API_URL + "images/" + page + "/" + subpage + ".png?app_id="+ID+"&app_key="+APP_KEY)
+export function getTeletextPageImage(page:number, subpage:number, epochTime:string | ParsedQs | string[] | ParsedQs[] | undefined) {
+    if (epochTime){
+        throw new Error('Not yet implemented')
+    } else {
+        return fetchImage(TELETEXT_API_URL + "images/" + page + "/" + subpage + ".png?app_id="+ID+"&app_key="+APP_KEY)
+    }
 }
 
 export function getTeletextPageData(page:number) {
@@ -26,7 +31,7 @@ async function fetchImage(endpoint:string) {
         const buffer = await response.buffer(); //FIX: deprecated method
         return bufferToBase64(buffer, contentType)
     } catch (err) {
-        console.log("Unable to fetch", err);
+        console.error(err)
     }
 }
 
@@ -39,10 +44,10 @@ async function fetchJson(endpoint:string) {
          const blob = await response.blob();
          return await blob.text()
      } catch (err) {
-         console.log("Unable to fetch", err);
+         console.error(err)
      }
  }
 
-async function bufferToBase64(buffer:Buffer, contentType:string|null) {
+async function bufferToBase64(buffer:Buffer, contentType:string | null) {
     return "data:" + contentType + ';base64,' + buffer.toString('base64');
   };
